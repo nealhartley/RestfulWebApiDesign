@@ -1,0 +1,35 @@
+Chapter: 4
+
+We implemented our own data service in the contactdataservice.js file.
+This implemented our restful services to do with contacts.
+
+We then also implemented an express application exposeContactService.js
+This linked the incoming routes to the correct functions in contactdataservice
+
+we must first run our instance of mongodb with: "mongod --dbpath ./data --rest" 
+from within the base directory of the project.
+
+we can then run this using "node exposeContactService.js"
+
+we can then test the routes using postman.
+
+The data will by default be empty so a put call must be made first.
+in the post call you need to send a body like this:
+
+{
+    "primarycontactnumber": "contactString",
+    "firstname": "firstnameString",
+    "lastname": "lastnameString",
+    "title": "titleString",
+    "company": "companyString",
+    "jobtitle": "jobtitleString",
+    "othercontactnumbers": ["", "", ""],
+    "primaryemailaddress": "emailString",
+    "emailaddresses": ["", "", ""],
+    "groups": ["", "", ""]
+}
+
+Chapter: 5
+
+
+
