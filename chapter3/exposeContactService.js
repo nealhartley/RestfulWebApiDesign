@@ -6,7 +6,8 @@ const logger = require('morgan')
 const methodOverride = require('method-override')
 const errorHandler = require('errorhandler')
 const mongoose = require('mongoose')
-const dataservice = require('./modules/contactdataservice')
+const dataservice_v1 = require('./modules/contactdataservice_1')
+const dataservice_v2 = require('./modules/contactdataservice_2')
 
 const app = express()
 const url = require('url')
@@ -41,26 +42,40 @@ let contactSchema = new mongoose.Schema({
 
 const Contact = mongoose.model('Contact', contactSchema)
 
-app.get('/contacts/:number', (request, response) => {
+app.get('/v1/contacts/:number', (request, response) => {
     console.log(request.url + ' : querying for ' + request.params.number)
-    dataservice.findByNumber(Contact, request.params.number, response)
+    dataservice_v1.findByNumber(Contact, request.params.number, response)
 })
 
-app.post('/contacts', (request, response) => {
-    dataservice.update(Contact, request.body, response)
+app.post('/v1/contacts', (request, response) => {
+    dataservice_v1.update(Contact, request.body, response)
 })
 
-app.put('/contacts', (request, response) => {
-    dataservice.create(Contact, request.body, response)
+app.put('/v1/contacts', (request, response) => {
+    dataservice_v1.create(Contact, request.body, response)
 })
 
-app.del('/contacts/:primarycontactnumber', (request, response) => {
-    dataservice.remove(Contact, request.params.primarycontactnumber, response)
+app.del('/v1/contacts/:primarycontactnumber', (request, response) => {
+    dataservice_v1.remove(Contact, request.params.primarycontactnumber, response)
 })
 
-app.get('/contacts', (request, response) => {
+app.get('/v1/contacts', (request, response) => {
     console.log('listing all contacts with ' + request.params.key +  ' = ' + request.params.value)
-    dataservice.list(Contact,response)
+    dataservice_v1.list(Contact,response)
+})
+
+app.get('/contacts', function(request, response){
+    const get_params = url.parse(request.url, true).query
+    
+    if(Object.keys(get_params).length == 0){
+        dataservice_v2.list(Contact, response)
+    }
+
+    else {
+        const key = Object.keys(get_params)[0]
+        const value = get_params[key]
+        JSON.stringify(dataservice_v2.query_by_arg(Contact, key, value, response))
+    }
 })
 
 console.log('Running at port ' + app.get('port'))
